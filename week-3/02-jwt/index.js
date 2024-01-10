@@ -13,23 +13,21 @@ const jwtPassword = "secret";
  *                        Returns null if the username is not a valid email or
  *                        the password does not meet the length requirement.
  */
-const usernameSchema = z.string().email();
-const passwordSchema = z.string().min(6);
+const validationSchema = z.object({
+  username: z.string().email(),
+  password: z.string().min(6),
+});
 
 function signJwt(username, password) {
   // Your code here
-  const usernameValidation = usernameSchema.safeParse(username);
-  const passwordValidation = passwordSchema.safeParse(password);
-  if (!usernameValidation.success || !passwordValidation.success) {
+  const userValidation = validationSchema.safeParse({
+    username: username,
+    password: password,
+  });
+  if (!userValidation.success) {
     return null;
   }
-  const result = jwt.sign(
-    {
-      username: usernameValidation.data,
-      password: passwordValidation.data,
-    },
-    jwtPassword
-  );
+  const result = jwt.sign(userValidation.data, jwtPassword);
   return result;
 }
 
