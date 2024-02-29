@@ -57,39 +57,39 @@ router.get("/courses", (req, res) => {
 router.post("/courses/:courseId", userMiddleware, (req, res) => {
   // Implement course purchase logic
   const token = req.headers.authorization.split(" ")[1];
-    const decoded = jwt.verify(token, jwt_secret);
-    const user = User.find({
-        Username: decoded.username,
+  const decoded = jwt.verify(token, jwt_secret);
+  const user = User.find({
+    Username: decoded.username,
+  });
+  if (user) {
+    const course = Courses.find({
+      _id: req.params.courseId,
     });
-    if(user){
-        const course = Courses.find({
-            _id: req.params.courseId,
-        });
-        PurchasedCourses.create({
-            Username: decoded.username,
-            Course: course,
-        });
-        res.status(200).json({
-            msg: "Course purchased successfully",
-        });
-    }
+    PurchasedCourses.create({
+      Username: decoded.username,
+      Course: course,
+    });
+    res.status(200).json({
+      msg: "Course purchased successfully",
+    });
+  }
 });
 
 router.get("/purchasedCourses", userMiddleware, (req, res) => {
   // Implement fetching purchased courses logic
-   const token = req.headers.authorization.split(" ")[1];
-    const decoded = jwt.verify(token, jwt_secret);
-    const user = User.find({
-        Username: decoded.username,
+  const token = req.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(token, jwt_secret);
+  const user = User.find({
+    Username: decoded.username,
+  });
+  if (user) {
+    const purchasedCourses = User.find({
+      Username: decoded.username,
     });
-    if(user){
-        const purchasedCourses = PurchasedCourses.find({
-            Username: decoded.username,
-        });
-        res.status(200).json({
-            purchasedCourses: purchasedCourses,
-        });
-    }
+    res.status(200).json({
+      purchasedCourses: User.purchasedCourses,
+    });
+  }
 });
 
 module.exports = router;
